@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script
+      src="https://kit.fontawesome.com/8640696f0c.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      #box1 {
+        display: flex;
+        margin-top: 20px;
+        float: left;
+      }
+      #box1 img {
+        width: 92px;
+        height: 30px;
+        margin-left: 50px;
+        margin-top: 10px;
+      }
+      .input-icons {
+        width: 646px;
+        height: 44px;
+        border-radius: 20px;
+        border-color: white;
+        box-shadow: 5px 5px 10px grey;
+        margin-left: 100px;
+      }
+      #search {
+        width: 450px;
+        height: 90%;
+        margin-left: 50px;
+        border: white;
+      }
+      #search:focus {
+        outline: none;
+      }
+      .navbar {
+        position: sticky;
+        top: 0px;
+        background-color: white;
+      }
+      .inner-div {
+        width: 80%;
+        margin: auto;
+        margin-bottom: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 98vw; height: 80px" class="navbar">
+      <div id="box1">
+        <img
+          src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+        />
+        <div class="input-icons">
+          <input id="search" type="text" />
+          <i
+            class="fa fa-times"
+            aria-hidden="true"
+            style="margin-right: 30px; cursor: pointer"
+          ></i>
+          <i
+            class="fas fa-microphone"
+            style="margin-right: 30px; cursor: pointer"
+          ></i>
+          <i
+            class="fa fa-search"
+            aria-hidden="true"
+            onclick="showButtons(1)"
+            style="cursor: pointer"
+          >
+          </i>
+        </div>
+      </div>
+      <i
+        class="fa fa-user-circle-o"
+        aria-hidden="true"
+        style="
+          float: right;
+          margin-right: 50px;
+          margin-top: 20px;
+          font-size: 25px;
+          cursor: pointer;
+        "
+      ></i>
+      <i
+        class="fa fa-bars"
+        aria-hidden="true"
+        style="
+          float: right;
+          margin-right: 30px;
+          margin-top: 20px;
+          font-size: 25px;
+          cursor: pointer;
+        "
+      ></i>
+    </div>
+    <div
+      style="
+        width: 98vw;
+        margin: auto;
+        height: 1px;
+        background-color: rgb(201, 190, 190);
+      "
+    ></div>
+
+    <div id="parent"></div>
+
+    <div id="buttons" style="width: 300px; margin: auto"></div>
+
+    <!-- <input type="text" id="search" />
+    <button onclick="search()">search</button> -->
+  </body>
+</html>
+<script>
+  //d7d2a6fcb15c256ba60dc5b62ef451fd
+
+  var parent = document.getElementById("parent");
+
+  async function search() {
+    var search = document.getElementById("search").value;
+    try {
+      let res = await fetch(
+        `http://api.serpstack.com/search?access_key=d7d2a6fcb15c256ba60dc5b62ef451fd&query=${search}&num=100`
+      );
+      let { organic_results } = await res.json();
+      console.log("organic", organic_results);
+      return organic_results;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  var data;
+
+  async function main() {
+    data = await search();
+    console.log("data:", data);
+  }
+
+  function showButtons(index) {
+    console.log(index);
+    let buttons_div = document.getElementById("buttons");
+    buttons_div.innerHTML = null;
+    let original_id = index;
+
+    index = index + 1;
+
+    if (index <= 6) {
+      index = 6;
+    }
+
+    for (var i = index - 5; i <= index + 4; i++) {
+      let button = document.createElement("button");
+      button.style.width = "30px";
+      button.style.height = "30px";
+      button.style.borderRadius = "50%";
+      button.style.borderColor = "white";
+      button.style.color = "blue";
+      button.innerText = i;
+      button.setAttribute("id", `${i}`);
+      button.onclick = showData;
+      buttons_div.appendChild(button);
+    }
+    let btn = document.getElementById(original_id);
+    btn.style.color = "red";
+    main();
+  }
+
+  function showData() {
+    let id = Number(this.id);
+    let num = id - 1;
+
+    let data1 = data.slice(10 * num, (num + 1) * 10);
+    console.log(data1);
+    parent.innerHTML = null;
+
+    data1.forEach((el) => {
+      var div = document.createElement("div");
+      div.setAttribute("class", "inner-div");
+
+      let p1 = document.createElement("p");
+      p1.innerHTML = el.title;
+      p1.style.color = "blue";
+      p1.style.fontSize = "25px";
+
+      let p2 = document.createElement("p");
+      p2.innerText = el.url;
+      p2.style.fontSize = "15px";
+      p2.style.lineHeight = "-10px";
+
+      div.append(p2, p1);
+
+      parent.append(div);
+    });
+    showButtons(id);
+  }
+
+  // function appendsearch(videos) {
+  //   parent.innerHTML = null;
+
+  //   videos.forEach((el) => {
+  //     var div = document.createElement("div");
+  //     div.setAttribute("class", "inner-div");
+
+  //     let p1 = document.createElement("p");
+  //     p1.innerHTML = el.title;
+  //     p1.style.color = "blue";
+  //     p1.style.fontSize = "25px";
+
+  //     let p2 = document.createElement("p");
+  //     p2.innerText = el.url;
+  //     p2.style.fontSize = "15px";
+  //     p2.style.lineHeight = "-10px";
+
+  //     div.append(p2, p1);
+
+  //     parent.append(div);
+  //   });
+  // }
+</script>
